@@ -101,7 +101,7 @@
       const st = c.stats || {};
       el.innerHTML = `<div class="cm-head">${A.head(c.look)}<div><b>${G.esc(c.name)}</b>${c.npc ? '<small>Habitant</small>' : ''}${c.sick ? '<small class="sick">🤒 Malade</small>' : ''}</div><button class="x">✖</button></div>
         ${c.npc ? '' : bar('🍔', 'Faim', st.faim | 0) + bar('⚡', 'Énergie', st.energie | 0) + bar('🧼', 'Propreté', st.proprete | 0) + bar('🎈', 'Amusement', st.fun | 0)}
-        <div class="cm-btns"><button data-a="look">👕<i>Look</i></button><button data-a="mood">😊<i>Humeur</i></button><button data-a="talk">💬<i>Parler</i></button><button data-a="pocket">👝<i>Poche</i></button><button data-a="del">🗑️<i>Retirer</i></button></div>
+        <div class="cm-btns"><button data-a="look">👕<i>Look</i></button><button data-a="mood">😊<i>Humeur</i></button><button data-a="talk">💬<i>Parler</i></button>${c.seat && G.S.ents[c.seat.f] && G.FURN[G.S.ents[c.seat.f].t].vehicle ? '<button data-a="drive">🚗<i>Conduire</i></button>' : ''}<button data-a="pocket">👝<i>Poche</i></button><button data-a="del">🗑️<i>Retirer</i></button></div>
         <div class="moods" hidden>${Object.entries(A.exprs).map(([k, v]) => `<button data-m="${k}" class="${c.expr === k ? 'on' : ''}">${v.split(' ')[0]}</button>`).join('')}</div>`;
       el.querySelector('.x').onclick = U.closeFloating;
       el.querySelectorAll('[data-a]').forEach(b => b.onclick = () => {
@@ -110,6 +110,7 @@
         if (a === 'look') { U.closeFloating(); U.creator(c); }
         if (a === 'mood') el.querySelector('.moods').hidden = !el.querySelector('.moods').hidden;
         if (a === 'talk') G.say(c, talkLine(c));
+        if (a === 'drive') { U.closeFloating(); U.drivePicker(G.S.ents[c.seat.f]); }
         if (a === 'pocket') { U.closeFloating(); G.toTray(c); }
         if (a === 'del') { U.closeFloating(); U.confirm(`Faire partir ${G.esc(c.name)} pour toujours ?`, () => { G.burst(G.headPos(c).x, G.headPos(c).y + 60, '💨', 6); G.del(c); G.save(); }); }
       });
@@ -266,6 +267,16 @@
     });
   };
 
+  // ---------- DESTINATION D'UN VÉHICULE ----------
+  U.drivePicker = (f) => {
+    const S = G.S, d = G.FURN[f.t];
+    const locs = G.LOCS.filter(L => (!L.price || S.unlocked[L.id]) && L.sc !== S.cur);
+    const m = U.panel('small', `<div class="maphead"><h2>${d.rocket ? '🚀 Où on décolle ?' : '🚗 On va où ?'}</h2><button class="btn" data-close>✖</button></div>
+      <div class="dests">${locs.map(L => `<button class="dest" data-to="${L.sc}"><span>${L.ic}</span><i>${L.n}</i></button>`).join('')}</div>
+      <p class="hint">Les passagers partent avec le véhicule. Débloque d'autres lieux sur la carte !</p>`);
+    m.p.querySelectorAll('[data-to]').forEach(b => b.onclick = () => { m.close(); G.drive(f, b.dataset.to); });
+  };
+
   // ---------- MISSIONS ----------
   U.quests = () => {
     const m = U.panel('questp', '<div class="qbody"></div>');
@@ -323,7 +334,7 @@
   };
 
   // ---------- DÉCORATION ----------
-  const CATS = ['Salon', 'Cuisine', 'Chambre', 'Salle de bain', 'Jardin', 'Plage', 'Déco', 'Magasin', 'Hôpital', 'École', 'Fun'];
+  const CATS = ['Salon', 'Cuisine', 'Chambre', 'Salle de bain', 'Jardin', 'Véhicules', 'Plage', 'Déco', 'Magasin', 'Hôpital', 'École', 'Fun'];
   let decoCat = 'Salon';
   U.toggleDeco = () => {
     G.deco = !G.deco;

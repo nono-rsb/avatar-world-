@@ -152,7 +152,7 @@
       items: [['papier', 1010, 690]],
     },
     jardin: {
-      n: 'Jardin', ic: '🌻', grp: 'maison', W: 3000, type: 'out', ground: 'herbe', home: true,
+      n: 'Jardin', ic: '🌻', grp: 'maison', W: 3700, type: 'out', ground: 'herbe', home: true,
       extra: () => {
         let s = `<rect x="0" y="180" width="500" height="410" fill="#ffc4a8" stroke="${O}" stroke-width="3"/>`;
         for (let y = 200; y < 590; y += 26) s += `<line x1="0" y1="${y}" x2="500" y2="${y}" stroke="${sh('#ffc4a8', -10)}" stroke-width="2"/>`;
@@ -164,15 +164,15 @@
       ents: [
         ['porte', 250, { st: { to: 'salon' } }], ['fleurs', 440, { y: 700 }], ['potager', 700], ['potager', 1060], ['caissegraines', 880, { y: 704 }],
         ['pommier', 1450], ['trampoline', 1450, { y: 704 }], ['balancoire', 1800], ['barbecue', 2060], ['piscine', 2350, { y: 690 }],
-        ['niche', 2700], ['gamelle', 2560, { y: 700 }], ['barriere', 2880], ['lampadaire', 1250],
+        ['niche', 2700], ['gamelle', 2560, { y: 700 }], ['barriere', 2880], ['lampadaire', 1250], ['voiture', 3200], ['velo', 3520, { y: 690 }],
       ],
       items: [['arrosoir', 1220, 694], ['graine_tomate', 600, 694], ['ballon', 2000, 700]],
     },
     parc: {
-      n: 'Parc', ic: '🌳', W: 2800, type: 'out', ground: 'herbe',
+      n: 'Parc', ic: '🌳', W: 3500, type: 'out', ground: 'herbe',
       far: W => city(W),
       extra: W => `<ellipse cx="2150" cy="620" rx="330" ry="40" fill="#7fd6ff" stroke="${O}" stroke-width="3"/><text x="2050" y="610" font-size="34">🦆</text><text x="2250" y="630" font-size="28">🦢</text><path d="M0,690 Q1400,640 2800,690 L2800,720 L0,720 Z" fill="#e8d3a6" opacity=".8"/>`,
-      ents: [['arbre', 200], ['banc', 520], ['lampadaire', 720], ['fontaine', 1020], ['balancoire', 1380], ['toboggan', 1720], ['bacasable', 2000, { y: 700 }], ['kiosque', 2350], ['arbre', 2650], ['lampadaire', 2500], ['fleurs', 820, { y: 706 }]],
+      ents: [['arbre', 200], ['banc', 520], ['lampadaire', 720], ['fontaine', 1020], ['balancoire', 1380], ['toboggan', 1720], ['bacasable', 2000, { y: 700 }], ['kiosque', 2350], ['arbre', 2650], ['lampadaire', 2500], ['fleurs', 820, { y: 706 }], ['bus', 3130], ['scooter', 2880, { y: 700 }]],
       npcs: [npc('Paulo', 2480, { top: 'chemise', topC: '#ffffff', age: 'adulte', hat: 'casquette', hatC: '#ff5c8a' })],
       items: [['cerfvolant', 900, 690], ['ballonplage', 1550, 694]],
     },
@@ -201,9 +201,9 @@
       npcs: [npc('Sam le coiffeur', 560, { top: 'debardeur', topC: '#3d3d4f', hair: 'iroquois', hairC: '#c77dff' })],
     },
     hopital: {
-      n: 'Hôpital', ic: '🏥', W: 2250, type: 'room',
+      n: 'Hôpital', ic: '🏥', W: 2750, type: 'room',
       wall: { c: '#dff7d8', p: 'uni' }, floor: { c: '#cfd8e3', p: 'carrelage' },
-      ents: [['enseigne', 1100, { c: '#e63946', st: { label: '🏥 Hôpital' } }], ['lithopital', 360], ['lithopital', 820], ['radiographie', 1170], ['balance', 1370, { y: 690 }], ['pharmacie', 1580], ['fauteuilroulant', 1820], ['bureau', 2060], ['horloge', 1580, { y: 340 }]],
+      ents: [['enseigne', 1100, { c: '#e63946', st: { label: '🏥 Hôpital' } }], ['ambulance', 2480], ['lithopital', 360], ['lithopital', 820], ['radiographie', 1170], ['balance', 1370, { y: 690 }], ['pharmacie', 1580], ['fauteuilroulant', 1820], ['bureau', 2060], ['horloge', 1580, { y: 340 }]],
       npcs: [npc('Dr Zoé', 1440, { top: 'blouse', topC: '#ffffff', bottomC: '#4aa3ff', glasses: 'rondes' })],
     },
     ecole: {
@@ -219,14 +219,14 @@
       npcs: [npc('Hugo le barista', 760, { top: 'tshirt', topC: '#8b5a2b', hat: 'bonnet', hatC: '#3d3d4f', beard: 'barbe' })],
     },
     plage: {
-      n: 'Plage', ic: '🏖️', W: 2800, type: 'out', ground: 'sable',
+      n: 'Plage', ic: '🏖️', W: 3300, type: 'out', ground: 'sable',
       far: W => {
         let s = `<rect y="430" width="${W}" height="170" fill="#4aa3ff"/><path d="M${W * 0.7},440 q60,-50 140,0 Z" fill="#52b788" stroke="${O}" stroke-width="2.5"/>`;
         for (let x = 0; x < W; x += 120) s += `<path d="M${x},${470 + (x % 3) * 20} q30,-12 60,0" fill="none" stroke="#fff" stroke-width="3" opacity=".7"/>`;
         s += `<text x="${W * 0.3}" y="470" font-size="40">⛵</text><text x="${W * 0.55}" y="510" font-size="30">🐬</text>`;
         return s;
       },
-      ents: [['palmier', 200], ['parasol', 600], ['serviette', 600, { y: 692 }], ['transat', 900], ['chateau', 1220, { y: 700 }], ['kiosque', 1650], ['parasol', 2050, { c: '#4aa3ff' }], ['transat', 2050], ['serviette', 2350, { y: 696, c: '#3ccf91' }], ['palmier', 2620]],
+      ents: [['palmier', 200], ['parasol', 600], ['serviette', 600, { y: 692 }], ['transat', 900], ['chateau', 1220, { y: 700 }], ['kiosque', 1650], ['parasol', 2050, { c: '#4aa3ff' }], ['transat', 2050], ['serviette', 2350, { y: 696, c: '#3ccf91' }], ['palmier', 2620], ['camionglace', 3000]],
       npcs: [npc('Kai le surfeur', 1850, { top: 'debardeur', topC: '#2ec4b6', bottom: 'short', bottomC: '#ff9f43', shoes: 'sandales', glasses: 'soleil' })],
       items: [['ballonplage', 1400, 694], ['bouee', 1800, 700], ['pelle', 1300, 704]],
     },

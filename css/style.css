@@ -49,7 +49,8 @@ input { font-family: inherit; }
 .ent .inner { position: relative; width: 100%; height: 100%; }
 .ent svg { width: 100%; height: 100%; display: block; overflow: visible; }
 .ent svg * { pointer-events: visiblePainted; }
-.ent.front, .ent.front * { pointer-events: none !important; }
+.ent.front:not(.veh), .ent.front:not(.veh) * { pointer-events: none !important; }
+.ent.front.veh svg * { cursor: pointer; }
 .ent .emo { width: 100%; height: 100%; display: flex; align-items: flex-end; justify-content: center; line-height: 1; pointer-events: auto; filter: drop-shadow(0 3px 0 rgba(58, 42, 77, .25)); position: relative; transform-origin: 50% 90%; cursor: grab; }
 .ent .emo i { position: absolute; right: -6px; bottom: -4px; font-style: normal; font-size: 46%; }
 .ent.ki svg, .ent.kc svg, .ent.kp .emo { cursor: grab; }
@@ -105,6 +106,16 @@ svg .shake { transform-box: fill-box; transform-origin: center; animation: shake
 @keyframes sparkle { from { opacity: .3; } to { opacity: 1; } }
 @keyframes tile { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
 @keyframes spot { 0% { transform: translate(-200px, -60px); } 100% { transform: translate(260px, 80px); } }
+
+/* véhicules */
+.driving .wheel { animation: spin .35s linear infinite; }
+.driving .inner > svg { animation: bob .25s ease-in-out infinite; }
+.blink { animation: sparkle .25s steps(2) infinite; }
+.dests { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.dest { border: 3px solid var(--ink); background: #fff; border-radius: 16px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 3px 0 var(--ink); }
+.dest span { font-size: 32px; }
+.dest i { font-style: normal; font-weight: 600; font-size: 13px; }
+.dest:active { transform: translateY(2px); }
 
 /* objets en rayon */
 .stock { position: absolute; pointer-events: auto; cursor: grab; display: flex; align-items: flex-end; justify-content: center; line-height: 1; filter: drop-shadow(0 2px 0 rgba(58, 42, 77, .25)); }

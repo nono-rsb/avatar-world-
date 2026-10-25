@@ -130,7 +130,7 @@
     const rec = { el, inner, front: null, key: '', pos: '' };
     const d = defOf(e);
     if (e.k === 'f' && d.front) {
-      rec.front = G.el('div', 'ent front');
+      rec.front = G.el('div', 'ent front' + (d.vehicle ? ' veh' : ''));
       rec.front.dataset.id = e.id;
       rec.front.appendChild(G.el('div', 'inner'));
       G.$('#ents').appendChild(rec.front);
@@ -722,6 +722,11 @@
   function furnTap(f, lx, ly) {
     const d = G.FURN[f.t];
     if (d.tap) { d.tap(f, lx, ly); return; }
+    if (d.vehicle) {
+      if (f.drive) return;
+      if (!G.cur.some(o => o.seat && o.seat.f === f.id)) { G.sfx(d.siren ? 'siren' : 'honk'); G.shakeEnt(f); G.sayAt(f, d.rocket ? 'Installe un astronaute !' : 'Mets quelqu\'un au volant !'); return; }
+      G.ui.drivePicker(f); return;
+    }
     if (d.door) { G.sfx('door'); G.go(f.st.to); return; }
     if (d.cont) {
       f.st.open = !f.st.open;
@@ -841,6 +846,7 @@
     if (en) {
       const e = G.S.ents[en.dataset.id];
       if (e) {
+        if (e.drive || (e.seat && G.S.ents[e.seat.f] && G.S.ents[e.seat.f].drive)) { ev.preventDefault(); return; }
         if (e.k === 'f' && !G.deco) { G.drag = { e, tapOnly: true, sx: ev.clientX, sy: ev.clientY }; }
         else startDrag(e, ev);
         ev.preventDefault();
@@ -1021,6 +1027,7 @@
           if (e.anim && e.anim.k === 'slide') slideTick(e, dt);
         }
         if (e.k === 'p' && !e.fall && !e._drag && !e.seat) petWander(e, dt);
+        if (e.k === 'f' && e.drive) { const sc0 = G.S.cur; driveTick(e, dt); if (G.S.cur !== sc0) break; }
       }
       // autoscroll pendant le glisser
       if (G.drag && G.drag.moved && G.drag.cx != null) {
@@ -1056,6 +1063,55 @@
     if (f.flip) lx = d.w - lx;
     c.x = f.x - d.w / 2 + lx; c.y = f.y - d.h + ly;
     if (a.t >= 1) { c.anim = null; c.free = null; c.y = G.FLOOR; c.x += f.flip ? -30 : 30; G.redraw(c); land(c, null, 600); c.stats.fun = Math.min(100, c.stats.fun + 15); G.say(c, 'Youpiii !'); }
+  }
+  // ---------- VÉHICULES ----------
+  G.drive = (f, to) => {
+    const d = G.FURN[f.t];
+    if (!G.cur.some(o => o.seat && o.seat.f === f.id)) return;
+    G.ui.closeFloating();
+    f.drive = { ph: 'out', to, v: 0, dir: f.flip ? -1 : 1, by: f.y };
+    if (d.rocket || d.siren) { f.st.fly = true; G.redraw(f); }
+    G.sfx(d.rocket ? 'rocket' : 'vroom'); if (d.siren) G.sfx('siren'); else if (!d.rocket) G.sfx('honk');
+    G.cur.forEach(o => { if (o.seat && o.seat.f === f.id && o.k === 'c') { G.tmpExpr(o, 'joy', 4000); } });
+    const first = G.cur.find(o => o.seat && o.seat.f === f.id && o.k === 'c');
+    if (first) G.say(first, d.rocket ? '3... 2... 1... Décollage !' : G.pick(['C\'est parti !', 'En route !', 'Vroum vroum !']));
+  };
+  function driveTick(f, dt) {
+    const d = G.FURN[f.t], D = f.drive, W = G.W();
+    const rec = G.dom.get(f.id);
+    if (rec) { rec.el.classList.add('driving'); if (rec.front) rec.front.classList.add('driving'); }
+    if (D.ph === 'out') {
+      D.v = Math.min(d.rocket ? 1400 : 1100, D.v + (d.rocket ? 500 : 700) * dt);
+      if (d.rocket) { f.y -= D.v * dt; if (Math.random() < 0.5) G.fxAt(f.x + G.rand(-30, 30), f.y + 20, '💨', 'fall'); }
+      else { f.x += D.v * D.dir * dt; if (Math.random() < 0.15) G.fxAt(f.x - D.dir * d.w / 2, f.y - 20, '💨', 'up'); }
+      if (!d.rocket && Math.abs(f.x - G.camCenter()) > 300) G.panBy((f.x - G.camCenter()) * 0.08);
+      if ((d.rocket && f.y < -120) || f.x > W + d.w || f.x < -d.w) arrive(f);
+    } else {
+      const step = (a, b) => { const dd = b - a, sp = Math.max(120, Math.abs(dd) * 2.6) * dt; return Math.abs(dd) <= sp ? b : a + Math.sign(dd) * sp; };
+      if (d.rocket) { f.y = step(f.y, D.by); if (Math.random() < 0.5) G.fxAt(f.x + G.rand(-30, 30), f.y + 20, '💨', 'fall'); }
+      else f.x = step(f.x, D.tx);
+      if (Math.abs(f.x - D.tx) < 3 && Math.abs(f.y - D.by) < 3) {
+        f.x = D.tx; f.y = D.by; f.drive = null; f.st.fly = false; G.redraw(f);
+        if (rec) { rec.el.classList.remove('driving'); if (rec.front) rec.front.classList.remove('driving'); }
+        G.sfx(d.rocket ? 'tada' : 'honk');
+        const first = G.cur.find(o => o.seat && o.seat.f === f.id && o.k === 'c');
+        if (first) G.say(first, G.pick(['On est arrivés !', 'Super balade !', 'Terminus, tout le monde descend !']));
+        G.surfDirty(); G.emit('drive'); G.save();
+      }
+    }
+  }
+  function arrive(f) {
+    const D = f.drive, d = G.FURN[f.t], to = D.to;
+    G.initScene(to);
+    const pass = Object.values(ents()).filter(o => o.seat && o.seat.f === f.id);
+    const held = Object.values(ents()).filter(i => i.held && pass.some(o => o.id === i.held));
+    [f, ...pass, ...held].forEach(o => { o.sc = to; });
+    const W = G.SCENES[to].W;
+    if (d.rocket) { D.tx = f.x = G.clamp(700, d.w, W - d.w); f.y = -300; G.S.cam[to] = Math.max(0, D.tx - 500); }
+    else { f.flip = false; f.x = -d.w / 2; D.tx = G.clamp(520, d.w / 2 + 40, W - d.w / 2); G.S.cam[to] = 0; }
+    D.ph = 'in';
+    G.go(to);
+    G.redraw(f);
   }
   function petWander(p, dt) {
     if (p.surf || p.y < G.FTOP - 5) return;
@@ -1203,6 +1259,7 @@
     { id: 'photo', ev: 'photo', n: 1, txt: 'Prends une photo 📸', r: 10 },
     { id: 'adopt', ev: 'adopt', n: 1, txt: 'Adopte un animal', r: 30 },
     { id: 'tv', ev: 'tv', n: 1, txt: 'Allume la télé', r: 5 },
+    { id: 'drive', ev: 'drive', n: 1, txt: 'Fais un tour en véhicule 🚗', r: 20 },
     { id: 'open', ev: 'open', n: 3, txt: 'Ouvre 3 placards ou frigos', r: 10 },
   ];
   G.fillQuests = () => {

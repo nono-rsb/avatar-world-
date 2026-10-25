@@ -797,10 +797,63 @@
     n: 'Sapin', cat: 'Jardin', price: 50, w: 200, h: 300,
     svg: () => r(88, 250, 24, 50, '#8b5a2b', 3) + p('M100,0 L170,110 L140,110 L190,190 L150,190 L200,260 L0,260 L50,190 L10,190 L60,110 L30,110 Z', '#2d6a4f') + emo(100, 0, '⭐', 30)
   });
-  def('voiture', {
-    n: 'Voiture', cat: 'Jardin', price: 250, w: 380, h: 190, c: '#e63946',
+  // ================= VÉHICULES =================
+  const wheel = (x, y, rr) => `<g class="wheel" style="transform-origin:${x}px ${y}px">${c(x, y, rr, '#3d3d4f')}${c(x, y, rr * 0.45, '#cfd8e3')}${l(x - rr * 0.45, y, x + rr * 0.45, y, O, 2.5)}${l(x, y - rr * 0.45, x, y + rr * 0.45, O, 2.5)}</g>`;
+  const V = { cat: 'Véhicules', vehicle: true };
+  def('voiture', Object.assign({}, V, {
+    n: 'Voiture', price: 250, w: 380, h: 190, c: '#e63946',
     slots: [{ x: 150, y: 112 }, { x: 236, y: 112 }],
     svg: (st, k) => p('M70,70 Q90,10 160,10 L250,10 Q300,10 320,70 Z', '#cdeeff') + l(196, 14, 196, 70, k, 8),
-    front: (st, k) => p('M10,140 L10,96 Q14,70 60,68 L330,68 Q370,72 372,110 L372,140 Q372,156 356,156 L24,156 Q10,156 10,140 Z', k) + c(90, 158, 30, '#3d3d4f') + c(90, 158, 12, '#cfd8e3') + c(296, 158, 30, '#3d3d4f') + c(296, 158, 12, '#cfd8e3') + r(340, 86, 30, 16, '#ffd23f', 6, 2.5) + r(12, 90, 22, 14, '#ff9f43', 5, 2.5) + l(190, 90, 210, 90, O, 4)
-  });
+    front: (st, k) => p('M10,140 L10,96 Q14,70 60,68 L330,68 Q370,72 372,110 L372,140 Q372,156 356,156 L24,156 Q10,156 10,140 Z', k) + wheel(90, 158, 30) + wheel(296, 158, 30) + r(340, 86, 30, 16, '#ffd23f', 6, 2.5) + r(12, 90, 22, 14, '#ff9f43', 5, 2.5) + l(190, 90, 210, 90, O, 4)
+  }));
+  def('cabriolet', Object.assign({}, V, {
+    n: 'Cabriolet', price: 320, w: 380, h: 160, c: '#ff7aa2',
+    slots: [{ x: 140, y: 88 }, { x: 236, y: 88 }],
+    svg: (st, k) => p('M250,62 L282,20 L292,22 L270,62 Z', '#cdeeff', 3),
+    front: (st, k) => p('M8,112 L8,74 Q12,56 50,56 L340,56 Q372,60 374,90 L374,112 Q374,128 358,128 L22,128 Q8,128 8,112 Z', k) + l(30, 80, 340, 80, '#fff', 3) + wheel(86, 128, 28) + wheel(300, 128, 28) + r(344, 70, 26, 14, '#ffd23f', 6, 2.5) + t(190, 102, '♥', 22, '#fff')
+  }));
+  def('bus', Object.assign({}, V, {
+    n: 'Bus', price: 450, w: 600, h: 300, c: '#ffd23f',
+    slots: [{ x: 140, y: 214 }, { x: 250, y: 214 }, { x: 360, y: 214 }, { x: 470, y: 214 }],
+    svg: (st, k) => r(4, 10, 592, 250, k, 30) + r(80, 40, 470, 140, '#cdeeff', 10, 3) + r(560, 40, 30, 110, '#cdeeff', 8, 3),
+    front: (st, k) => [195, 305, 415].map(x => r(x - 5, 40, 10, 140, k, 3, 2.5)).join('') + r(4, 176, 592, 90, k, 14) + r(10, 200, 580, 14, '#3d3d4f', 4, 0)
+      + `<text x="300" y="246" font-size="26" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="#fff" stroke="${O}" stroke-width="1.5" paint-order="stroke" font-family="Fredoka, sans-serif">BUS MINIVILLE</text>`
+      + r(14, 50, 52, 120, '#cdeeff', 6, 3) + l(40, 54, 40, 166, O, 2.5) + wheel(120, 266, 34) + wheel(480, 266, 34) + r(570, 180, 22, 20, '#fff6b0', 6, 2.5)
+  }));
+  def('scooter', Object.assign({}, V, {
+    n: 'Scooter', price: 150, w: 230, h: 160, c: '#3ccf91',
+    slots: [{ x: 100, y: 80 }],
+    svg: (st, k) => l(180, 20, 196, 0, O, 5) + l(186, 4, 210, 4, O, 6),
+    front: (st, k) => p('M40,96 L140,96 Q150,70 168,40 L186,40 Q178,90 196,128 L40,128 Q30,112 40,96 Z', k) + r(60, 82, 80, 16, '#3d3d4f', 8) + wheel(50, 134, 24) + wheel(190, 134, 24) + c(186, 50, 8, '#fff6b0', 2.5)
+  }));
+  def('velo', Object.assign({}, V, {
+    n: 'Vélo', price: 80, w: 240, h: 160, c: '#4aa3ff',
+    slots: [{ x: 104, y: 72 }],
+    svg: () => '',
+    front: (st, k) => wheel(52, 120, 38) + wheel(190, 120, 38) + p('M52,120 L100,74 L170,74 L190,120 M100,74 L120,120 L170,74 M120,120 L52,120', 'none', 6, k) + r(84, 64, 40, 12, '#3d3d4f', 6) + l(170, 74, 176, 40, O, 5) + l(164, 40, 190, 40, O, 6)
+  }));
+  def('ambulance', Object.assign({}, V, {
+    n: 'Ambulance', price: 400, w: 420, h: 240, c: '#ffffff', siren: true,
+    slots: [{ x: 150, y: 150 }, { x: 330, y: 150 }],
+    svg: (st, k) => r(10, 20, 260, 190, k, 18) + p('M270,70 L350,70 Q395,80 400,130 L400,200 L270,200 Z', k) + r(110, 50, 110, 80, '#cdeeff', 8) + p('M286,84 L344,84 Q378,92 384,130 L286,130 Z', '#cdeeff'),
+    front: (st, k) => r(10, 128, 400, 72, k, 12) + r(10, 150, 400, 12, '#e63946', 0, 0) + r(30, 60, 60, 60, '#fff', 6, 0) + r(52, 66, 16, 48, '#e63946', 3, 0) + r(36, 82, 48, 16, '#e63946', 3, 0)
+      + wheel(96, 204, 32) + wheel(330, 204, 32) + `<g class="${st.fly ? 'blink' : ''}">${r(120, 2, 30, 18, '#e63946', 5, 2.5)}${r(156, 2, 30, 18, '#4aa3ff', 5, 2.5)}</g>` + r(384, 150, 22, 18, '#fff6b0', 6, 2.5)
+  }));
+  def('camionglace', Object.assign({}, V, {
+    n: 'Camion de glaces', price: 380, w: 440, h: 270, c: '#ff9ebb',
+    slots: [{ x: 360, y: 168 }],
+    stock: [{ t: 'i', k: 'glace', p: 3 }, { t: 'i', k: 'sorbet', p: 3 }, { t: 'i', k: 'sucette', p: 2 }, { t: 'i', k: 'cupcake', p: 4 }],
+    spos: [[70, 140], [130, 140], [190, 140], [250, 140]],
+    svg: (st, k) => r(10, 30, 290, 200, k, 18) + r(40, 70, 240, 74, '#fff4f8', 8) + p('M300,90 L370,90 Q420,100 424,150 L424,210 L300,210 Z', k) + p('M316,104 L366,104 Q402,112 408,150 L316,150 Z', '#cdeeff') + t(150, 12, '🍦', 40),
+    front: (st, k) => r(10, 144, 414, 70, k, 12) + p('M20,40 L290,40 L290,58 Q262,74 236,58 Q208,74 180,58 Q152,74 124,58 Q96,74 68,58 Q40,74 20,58 Z', '#fff', 2.5) + r(30, 144, 280, 14, '#fff', 4, 2.5)
+      + `<text x="160" y="186" font-size="22" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="#fff" stroke="${O}" stroke-width="1.5" paint-order="stroke" font-family="Fredoka, sans-serif">GLACES</text>` + wheel(90, 216, 32) + wheel(350, 216, 32)
+  }));
+  def('fusee', Object.assign({}, V, {
+    n: 'Fusée', price: 600, w: 220, h: 400, c: '#e9f4ff', rocket: true,
+    slots: [{ x: 110, y: 250 }],
+    svg: (st, k) => c(110, 130, 44, '#1d1033', 3),
+    front: (st, k) => `<path d="M110,0 C170,60 180,150 176,300 L44,300 C40,150 50,60 110,0 Z M110,88 A42,42 0 1,0 110.1,88 Z" fill="${k}" fill-rule="evenodd" stroke="${O}" stroke-width="3"/>`
+      + c(110, 130, 42, 'none', 6, '#9aa5b1') + p('M44,220 L0,320 L44,300 Z', '#e63946') + p('M176,220 L220,320 L176,300 Z', '#e63946') + r(66, 300, 88, 26, '#9aa5b1', 6)
+      + p('M60,40 Q110,20 160,40', 'none', 4, '#e63946') + (st.fly ? `<g class="flame">${p('M70,326 Q110,420 150,326 Z', '#ff9f43', 3)}${p('M90,326 Q110,384 130,326 Z', '#ffd23f', 2)}</g>` : '')
+  }));
 })();

@@ -123,6 +123,10 @@ G.audio = (() => {
     camera: () => { noise(0.05, 3000, 0.3); tone(1200, 0.05, 'square', 0.05, null, 0.06); },
     ring: () => [0, 0.2, 0.6, 0.8].forEach(w => tone(1320, 0.12, 'square', 0.06, null, w)),
     cheer: () => [0, 2, 4, 5, 7, 9, 11, 12].forEach((n, i) => tone(N(n + 12), 0.15, 'square', 0.06, null, i * 0.05)),
+    honk: () => { tone(420, 0.18, 'square', 0.1); tone(330, 0.25, 'square', 0.1, null, 0.2); },
+    vroom: () => { tone(70, 1.2, 'sawtooth', 0.12, 220); noise(1, 300, 0.1, 0, 'lowpass'); },
+    siren: () => [0, 0.4, 0.8, 1.2].forEach((w, i) => tone(i % 2 ? 660 : 880, 0.38, 'square', 0.06, null, w)),
+    rocket: () => { noise(2, 600, 0.3, 0, 'lowpass'); tone(80, 2, 'sawtooth', 0.1, 400); },
     sparkle: () => [0, 0.05, 0.1].forEach((w, i) => tone(2000 + i * 400, 0.15, 'sine', 0.08, null, w)),
   };
   function play(name, a) { init(); if (sfx[name]) sfx[name](a); }

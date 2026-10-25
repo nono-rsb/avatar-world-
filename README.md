@@ -25,4 +25,5 @@ La partie est sauvegardée automatiquement dans le navigateur.
 - **Mode déco** : acheter, déplacer, retourner, recolorer et vendre des meubles ; changer murs et sols.
 - **5 mini-jeux** d'arcade, **atelier de dessin** (le dessin s'affiche sur les tableaux), **mode photo**.
 - **Jour/nuit**, éclairage, météo (pluie, neige), disco avec lumières et danse, musique et sons générés.
+- **Véhicules** : voiture, cabriolet, bus, scooter, vélo, ambulance, camion de glaces et fusée. Installe des passagers, touche le véhicule (ou « Conduire » dans le menu du personnage), choisis une destination et c'est parti, avec les passagers à bord !
 - **Poche** pour transporter personnages et objets d'un lieu à l'autre, portes entre les pièces.
