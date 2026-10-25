@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#ff9ebb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>MiniVille</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="sky">
+    <div id="stars"></div>
+    <div id="sun"></div>
+    <div id="moon"></div>
+    <div class="cloud" style="top:8%;animation-duration:90s"></div>
+    <div class="cloud" style="top:20%;animation-duration:130s;animation-delay:-60s;transform:scale(.7)"></div>
+    <div class="cloud" style="top:4%;animation-duration:110s;animation-delay:-30s;transform:scale(1.2)"></div>
+  </div>
+  <div id="viewport">
+    <div id="world">
+      <div id="bg"></div>
+      <div id="ents"></div>
+      <div id="night"></div>
+      <div id="lights"></div>
+      <div id="discofx"><i></i><i></i><i></i><i></i><i></i></div>
+      <div id="fx"></div>
+    </div>
+  </div>
+  <div id="weather"></div>
+
+  <div id="topbar">
+    <button id="btnMap" class="pill big" title="Carte">🗺️<i>Carte</i></button>
+    <button id="locName" class="pill"></button>
+    <div id="trayWrap"><span class="tlabel">👝 Poche</span><div id="tray"></div></div>
+    <div class="spacer"></div>
+    <div id="clock" class="pill"></div>
+    <button id="coins" class="pill">🪙 <span>0</span></button>
+    <button id="btnQuests" class="pill" title="Missions">📋</button>
+    <button id="btnSettings" class="pill" title="Réglages">⚙️</button>
+  </div>
+  <div id="sidebtns">
+    <button id="btnPeople" title="Habitants">👥<i>Habitants</i></button>
+    <button id="btnNew" title="Créer">➕<i>Créer</i></button>
+    <button id="btnDeco" title="Décorer">🛠️<i>Déco</i></button>
+    <button id="btnPhoto" title="Photo">📸<i>Photo</i></button>
+  </div>
+  <div id="trashzone">🗑️<i>Vendre</i></div>
+  <div id="decobar" hidden></div>
+  <div id="ui"></div>
+  <div id="toasts"></div>
+  <div id="rotate">📱↻ Tourne ton écran pour mieux jouer !</div>
+
+  <script src="js/util.js"></script>
+  <script src="js/avatar.js"></script>
+  <script src="js/items.js"></script>
+  <script src="js/furniture.js"></script>
+  <script src="js/scenes.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/minigames.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    G.ui.init();
+    G.startEngine();
+    G.ui.title();
+  </script>
+</body>
+</html>
