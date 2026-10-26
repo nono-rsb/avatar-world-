@@ -264,6 +264,7 @@
     const Tp = T.f(tc, pose);
     const P = legPts(pose);
     let s = '';
+    if (pose === 'stand' && !o.vb) s += `<ellipse cx="60" cy="216" rx="34" ry="6" fill="#2a1f3a" opacity=".16"/>`;
     s += H.back || '';
     // jambes
     s += limb(P.L, skin, 14) + limb(P.R, skin, 14);
@@ -300,6 +301,7 @@
     if (ex === 'sad') s += p('M33,74 Q31,80 33,84 Q36,80 33,74 Z', '#7fd6ff', 1.5);
     if (o.sick) s += p('M98,40 Q94,48 98,52 Q102,48 98,40 Z', '#7fd6ff', 1.5);
     s += H.front || '';
+    if (H.front && L.hair !== 'afro' && L.hair !== 'iroquois') s += p('M34,34 Q44,24 56,23', 'none', 4, 'rgba(255,255,255,.4)');
     s += (A.hats[L.hat] || A.hats.aucun).f(L.hatC || '#ff5c8a');
     s += (A.glasses[L.glasses] || A.glasses.aucune).f(L.glassesC || '#3d3d4f');
     if (ex === 'cool' && (!L.glasses || L.glasses === 'aucune')) s += A.glasses.soleil.f('#222');

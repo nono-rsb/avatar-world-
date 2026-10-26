@@ -15,8 +15,10 @@ La partie est sauvegardée automatiquement dans le navigateur.
 
 ## Fonctionnalités
 
+- **Tout est gratuit** : 8 packs (Ma maison, Centre-ville, Hôpital & École, Loisirs, Animaux, La ferme, Château royal, Camping), tous débloqués.
+
 - **Créateur d'avatars** : 5 âges, 12 teintes de peau, 12 coiffures, yeux, barbe, 12 hauts, 6 bas, chaussures, chapeaux, lunettes, couleurs libres, expressions.
-- **16 lieux** : salon, cuisine, chambre, salle de bain, jardin, parc, supermarché, boutique, coiffeur, hôpital, école, café, et à débloquer : plage, animalerie, arcade, disco.
+- **19 lieux** : salon, cuisine, chambre, salle de bain, jardin, parc, supermarché, boutique, coiffeur, hôpital, école, café, plage, animalerie, arcade, disco, ferme, château et camping.
 - **Glisser-déposer avec physique** : gravité, lancers, rebonds, trampoline, ballons qui s'envolent.
 - **Meubles interactifs** : lits, canapés, douche, baignoire, toilettes, frigo et placards (rangement), cuisinière, micro-ondes, mixeur, télé (4 chaînes), piano, chaîne hi-fi, lampes, cheminée, balançoire, toboggan, radio à rayons X, balance…
 - **Besoins** : faim, énergie, propreté, amusement, maladie et soins.

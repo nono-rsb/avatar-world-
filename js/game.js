@@ -116,6 +116,7 @@
       list.forEach((it, i) => G.spawn('i', it, { sc: id, in: f.id, slot: i }));
     });
     (d.items || []).forEach(([type, x, y]) => G.spawn('i', type, { sc: id, x, y }));
+    (d.pets || []).forEach(([type, x, name]) => G.spawn('p', type, { sc: id, x, y: G.FLOOR + G.rand(0, 40), name }));
     (d.npcs || []).forEach(n => G.spawn('c', 'perso', { sc: id, x: n.x, y: n.y || 660, name: n.name, look: A.random(Object.assign({ age: 'adulte' }, n.look)), npc: true }));
   };
 
@@ -162,7 +163,8 @@
     const d = defOf(e);
     if (e.k === 'f') {
       const k = e.c || d.c || '#cccccc';
-      rec.inner.innerHTML = G.svg.wrap(d.w, d.h, d.svg(e.st, k, e));
+      const shadow = (!d.wall && !d.free && d.layer !== 1) ? `<ellipse cx="${d.w / 2}" cy="${d.h - 2}" rx="${d.w * 0.46}" ry="9" fill="#2a1f3a" opacity=".13"/>` : '';
+      rec.inner.innerHTML = G.svg.wrap(d.w, d.h, shadow + d.svg(e.st, k, e));
       rec.inner.style.transform = e.flip ? 'scaleX(-1)' : '';
       if (rec.front) { rec.front.firstChild.innerHTML = G.svg.wrap(d.w, d.h, d.front(e.st, k, e)); rec.front.firstChild.style.transform = e.flip ? 'scaleX(-1)' : ''; }
       // présentoirs (objets à prendre)
@@ -174,7 +176,7 @@
           const lx = e.flip ? d.w - pos[0] : pos[0];
           const sd = s.t === 'p' ? G.PETS[s.k] : G.ITEMS[s.k];
           const sz = s.t === 'p' ? 62 : Math.min(48, (sd.sz || 54) * 0.85);
-          const st = G.el('div', 'stock', (sd.svg ? G.ITEM_SVG[sd.svg]() : `<span>${sd.e}</span>`) + (sd.b ? `<em>${sd.b}</em>` : '') + (s.p ? `<b>${s.p}🪙</b>` : ''));
+          const st = G.el('div', 'stock', (sd.svg ? G.ITEM_SVG[sd.svg]() : `<span>${sd.e}</span>`) + (sd.b ? `<em>${sd.b}</em>` : '') + (s.p && !G.FREE ? `<b>${s.p}🪙</b>` : ''));
           st.dataset.i = i; st.dataset.f = e.id;
           st.style.cssText = `left:${lx - sz / 2}px;top:${pos[1] - sz}px;width:${sz}px;height:${sz}px;font-size:${sz * 0.82}px`;
           rec.el.appendChild(st);
@@ -516,8 +518,10 @@
     if (x != null) G.fxAt(x, y, `+${n}🪙`, 'coin');
     G.ui && G.ui.updateTop(true);
   };
+  G.FREE = true; // tout est gratuit
   G.spend = (n) => {
     if (n <= 0) return true;
+    if (G.FREE) { G.sfx('pop'); G.emit('buy'); return true; }
     if (G.S.coins < n) { G.toast('Pas assez de pièces 🪙 ! Fais des missions et des jeux.'); G.sfx('error'); return false; }
     G.S.coins -= n; G.sfx('coin'); G.ui && G.ui.updateTop(true);
     G.emit('buy');
@@ -677,6 +681,7 @@
     const d = G.PETS[p.t];
     G.sfx(d.snd); G.say(p, d.say, 1500); G.burst(headPos(p).x, headPos(p).y, '❤️', 3);
     p.stats.fun = Math.min(100, p.stats.fun + 8);
+    if (d.gives && G.now - (p._gave || 0) > 2500) { p._gave = G.now; const it = G.spawn('i', d.gives, { x: p.x, y: p.y - 60, sc: p.sc }); G.fall(it, G.rand(-200, 200), -600); G.sfx('pop'); }
     const rec = G.dom.get(p.id); if (rec) { rec.inner.classList.remove('hop'); void rec.inner.offsetWidth; rec.inner.classList.add('hop'); }
     G.emit('pet');
   }
@@ -1260,6 +1265,7 @@
     { id: 'adopt', ev: 'adopt', n: 1, txt: 'Adopte un animal', r: 30 },
     { id: 'tv', ev: 'tv', n: 1, txt: 'Allume la télé', r: 5 },
     { id: 'drive', ev: 'drive', n: 1, txt: 'Fais un tour en véhicule 🚗', r: 20 },
+    { id: 'fish', ev: 'fish', n: 1, txt: 'Pêche quelque chose au camping 🎣', r: 20 },
     { id: 'open', ev: 'open', n: 3, txt: 'Ouvre 3 placards ou frigos', r: 10 },
   ];
   G.fillQuests = () => {
@@ -1283,7 +1289,7 @@
         a.done = true;
         setTimeout(() => {
           G.sfx('tada');
-          G.toast(`✅ Mission réussie : ${q.txt} &nbsp;<b>+${q.r} 🪙</b>`, 3200);
+          G.toast(`✅ Mission réussie : ${q.txt}`, 3200);
           S.coins += q.r; S.qdone++;
           S.quests = S.quests.filter(x => x !== a);
           S.lastQuest = a.id;

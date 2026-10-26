@@ -177,7 +177,7 @@
       }
       G.save();
     };
-    const owned = (cat, id, opt) => !opt.price || G.S.owned.includes(cat + ':' + id);
+    const owned = (cat, id, opt) => G.FREE || !opt.price || G.S.owned.includes(cat + ':' + id);
     function fixOwned(L) {
       const chk = (cat, key, obj, def) => { if (!owned(cat, L[key], obj[L[key]] || {})) L[key] = def; };
       chk('hair', 'hair', A.hair, 'court'); chk('top', 'top', A.tops, 'tshirt'); chk('hat', 'hat', A.hats, 'aucun'); chk('glasses', 'glasses', A.glasses, 'aucune');
@@ -240,7 +240,7 @@
     const S = G.S;
     let pins = '';
     G.LOCS.forEach(L => {
-      const locked = L.price && !S.unlocked[L.id];
+      const locked = !G.FREE && L.price && !S.unlocked[L.id];
       const here = G.SCENES[S.cur] && (S.cur === L.sc || (L.id === 'maison' && G.SCENES[S.cur].grp === 'maison' && S.cur !== 'jardin'));
       const people = Object.values(S.ents).filter(e => (e.k === 'c' && !e.npc || e.k === 'p') && (e.sc === L.sc || (L.id === 'maison' && ['salon', 'cuisine', 'chambre', 'sdb'].includes(e.sc)))).slice(0, 4);
       pins += `<button class="pin ${locked ? 'locked' : ''} ${here ? 'here' : ''}" data-l="${L.id}" style="left:${L.x}%;top:${L.y}%"><span class="ic">${L.ic}</span><span class="nm">${L.n}</span>${locked ? `<b>🔒 ${L.price}🪙</b>` : ''}<span class="ppl">${people.map(p => p.k === 'c' ? `<i>${A.head(p.look)}</i>` : `<i class="pe">${G.PETS[p.t].e}</i>`).join('')}</span></button>`;
@@ -255,7 +255,7 @@
       </svg>${pins}</div>`);
     m.p.querySelectorAll('.pin').forEach(b => b.onclick = () => {
       const L = G.LOCS.find(x => x.id === b.dataset.l);
-      if (L.price && !S.unlocked[L.id]) {
+      if (!G.FREE && L.price && !S.unlocked[L.id]) {
         U.confirm(`Débloquer ${L.ic} ${L.n} pour ${L.price} 🪙 ?`, () => {
           if (!G.spend(L.price)) return;
           S.unlocked[L.id] = true; G.sfx('tada'); G.toast(`🎉 ${L.n} débloqué !`);
@@ -265,6 +265,16 @@
       }
       m.close(); G.sfx('door'); G.go(L.sc);
     });
+  };
+
+  // ---------- PACKS ----------
+  U.packs = () => {
+    G.sfx('swoosh');
+    const m = U.panel('packsp', `<div class="maphead"><h2>🎁 Les packs</h2><button class="btn" data-close>✖</button></div>
+      <p class="hint">Tous les packs sont gratuits et déjà débloqués. Touche un lieu pour y aller !</p>
+      <div class="packs">${G.PACKS.map(P => `<div class="pack" style="--c1:${P.c1};--c2:${P.c2}"><div class="pcover"><span>${P.ic}</span>${P.isNew ? '<em>NOUVEAU</em>' : ''}<b>GRATUIT</b></div>
+        <div class="pbody"><h3>${P.n}</h3><p>${P.txt}</p><div class="pplaces">${P.sc.map(s => `<button data-go="${s}">${G.SCENES[s].ic} ${G.SCENES[s].n}</button>`).join('')}</div></div></div>`).join('')}</div>`);
+    m.p.querySelectorAll('[data-go]').forEach(b => b.onclick = () => { m.close(); G.sfx('door'); G.go(b.dataset.go); });
   };
 
   // ---------- DESTINATION D'UN VÉHICULE ----------
@@ -284,10 +294,10 @@
       const S = G.S;
       const trophies = [[1, '🥉', 'Débutant'], [5, '🥈', 'Aventurier'], [15, '🥇', 'Champion'], [30, '🏆', 'Légende'], [60, '👑', 'Roi/Reine de MiniVille']];
       m.p.querySelector('.qbody').innerHTML = `<div class="maphead"><h2>📋 Missions</h2><button class="btn" data-close>✖</button></div>
-        ${S.quests.map(a => { const q = G.QUESTS.find(x => x.id === a.id); return `<div class="quest"><div><b>${q.txt}</b><div class="bar"><div style="width:${Math.min(100, a.p / q.n * 100)}%"></div></div></div><span>${a.p}/${q.n}</span><em>+${q.r}🪙</em></div>`; }).join('')}
+        ${S.quests.map(a => { const q = G.QUESTS.find(x => x.id === a.id); return `<div class="quest"><div><b>${q.txt}</b><div class="bar"><div style="width:${Math.min(100, a.p / q.n * 100)}%"></div></div></div><span>${a.p}/${q.n}</span></div>`; }).join('')}
         <p class="hint">Les missions terminées sont remplacées par de nouvelles. Missions réussies : <b>${S.qdone}</b></p>
         <h3>Trophées</h3><div class="trophies">${trophies.map(([n, ic, t]) => `<div class="${S.qdone >= n ? 'got' : ''}"><span>${ic}</span><i>${t}</i><small>${n} missions</small></div>`).join('')}</div>
-        <h3>Astuces pour gagner des pièces</h3><ul class="tips"><li>🐷 Vide la tirelire du salon régulièrement</li><li>🕹️ Joue aux jeux de la salle d'arcade</li><li>🥕 Récolte les légumes du potager</li><li>🎁 Ouvre des cadeaux, reviens chaque jour pour le cadeau quotidien</li></ul>`;
+        <h3>Astuces</h3><ul class="tips"><li>🎁 Tous les packs sont gratuits : ouvre le bouton Packs !</li><li>🚗 Installe des personnages dans un véhicule et touche-le pour voyager</li><li>🥕 Plante, arrose et récolte au potager et à la ferme</li><li>🎣 Pêche au ponton du camping</li></ul>`;
       m.p.querySelectorAll('[data-close]').forEach(b => b.onclick = () => { m.close(); U.refreshQuests = null; });
     };
     draw();
@@ -334,7 +344,7 @@
   };
 
   // ---------- DÉCORATION ----------
-  const CATS = ['Salon', 'Cuisine', 'Chambre', 'Salle de bain', 'Jardin', 'Véhicules', 'Plage', 'Déco', 'Magasin', 'Hôpital', 'École', 'Fun'];
+  const CATS = ['Salon', 'Cuisine', 'Chambre', 'Salle de bain', 'Jardin', 'Véhicules', 'Ferme', 'Château', 'Camping', 'Plage', 'Déco', 'Magasin', 'Hôpital', 'École', 'Fun'];
   let decoCat = 'Salon';
   U.toggleDeco = () => {
     G.deco = !G.deco;
@@ -361,7 +371,7 @@
         const st = Object.assign({}, d.st || {});
         let svg = '';
         try { svg = G.svg.wrap(d.w, d.h, d.svg(st, d.c || '#cccccc', {}) + (d.front ? d.front(st, d.c || '#ccc', {}) : ''), `-10 -10 ${d.w + 20} ${d.h + 20}`); } catch (e) { svg = ''; }
-        h += `<button class="dcard" data-buy="${k}"><div class="dthumb">${svg}</div><i>${d.n}</i><b>${d.price}🪙</b></button>`;
+        h += `<button class="dcard" data-buy="${k}"><div class="dthumb">${svg}</div><i>${d.n}</i><b>${G.FREE ? 'Gratuit' : d.price + '🪙'}</b></button>`;
       });
     }
     bar.innerHTML = h + '</div>';
@@ -385,15 +395,14 @@
   };
   U.sellFurniture = (f) => {
     const d = G.FURN[f.t];
-    if (d.fixed || d.door) { G.toast('Impossible de vendre ça !'); G.sfx('error'); return; }
-    const val = Math.floor(d.price / 2);
-    U.confirm(`Vendre « ${d.n} » pour ${val} 🪙 ?`, () => { G.burst(f.x, f.y - d.h / 2, '💨', 6); G.del(f); G.addCoins(val); G.settle(); G.save(); }, 'Vendre', 'Garder');
+    if (d.fixed || d.door) { G.toast('Impossible de retirer ça !'); G.sfx('error'); return; }
+    U.confirm(`Retirer « ${d.n} » ?`, () => { G.burst(f.x, f.y - d.h / 2, '💨', 6); G.del(f); G.sfx('swoosh'); G.settle(); G.save(); }, 'Retirer', 'Garder');
   };
   U.decoTools = (f) => {
     U.closeFloating();
     const d = G.FURN[f.t];
     const el = G.el('div', 'floating decotools');
-    el.innerHTML = `<b>${d.n}</b>${d.c ? '<button data-a="color">🎨 Couleur</button>' : ''}<button data-a="flip">↔️ Retourner</button>${d.fixed || d.door ? '' : `<button data-a="sell">💰 Vendre (${Math.floor(d.price / 2)})</button>`}<button data-a="x">✖</button>`;
+    el.innerHTML = `<b>${d.n}</b>${d.c ? '<button data-a="color">🎨 Couleur</button>' : ''}<button data-a="flip">↔️ Retourner</button>${d.fixed || d.door ? '' : `<button data-a="sell">🗑️ Retirer</button>`}<button data-a="x">✖</button>`;
     el.querySelectorAll('[data-a]').forEach(b => b.onclick = () => {
       const a = b.dataset.a;
       G.sfx('click');
@@ -539,6 +548,7 @@
   // ---------- INIT ----------
   U.init = () => {
     $('#btnMap').onclick = () => U.map();
+    $('#btnPacks').onclick = () => U.packs();
     $('#btnQuests').onclick = () => { G.sfx('click'); U.quests(); };
     $('#btnSettings').onclick = () => { G.sfx('click'); U.settings(); };
     $('#btnPeople').onclick = () => { G.sfx('click'); U.people(); };
